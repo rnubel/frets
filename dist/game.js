@@ -41,6 +41,7 @@ const readline = __importStar(require("readline"));
 const chalk_1 = __importDefault(require("chalk"));
 const notes_1 = require("./notes");
 const stats_1 = require("./stats");
+const fretboard_1 = require("./fretboard");
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -87,14 +88,23 @@ async function runGame(options) {
         const correctNote = (0, notes_1.noteAtFret)(stringName, fret);
         const correctSemitone = (0, notes_1.parseNoteInput)(correctNote);
         // Prompt loop — re-ask on invalid input
+        const firstPrompt = options.fretboard
+            ? (0, fretboard_1.renderFretboard)(options.maxFret, stringName, fret) + '\n> '
+            : chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + ' > ';
+        const retryPrompt = options.fretboard
+            ? '> '
+            : chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + ' > ';
         let answered = false;
+        let isFirst = true;
+        let startTime = process.hrtime.bigint();
         while (!answered) {
-            const startTime = process.hrtime.bigint();
-            const raw = await question(chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + ' > ');
+            const raw = await question(isFirst ? firstPrompt : retryPrompt);
+            isFirst = false;
             const elapsedSeconds = Number(process.hrtime.bigint() - startTime) / 1e9;
             const parsed = (0, notes_1.parseNoteInput)(raw.trim());
             if (parsed === null) {
                 console.log(chalk_1.default.dim('  Invalid input — try again (e.g. G#, Bb, F)'));
+                startTime = process.hrtime.bigint(); // reset timer for the retry
                 continue;
             }
             answered = true;
