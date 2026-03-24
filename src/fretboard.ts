@@ -35,8 +35,15 @@ export function renderFretboard(
   for (let rowFromTop = 0; rowFromTop < STRING_ORDER.length; rowFromTop++) {
     const stringIndex = STRING_ORDER.length - 1 - rowFromTop; // 5 down to 0
     const cells: string[] = [];
+    var nut;
+    
+    if (rowFromTop == targetRowFromTop && targetFret == 0) {
+      nut = 'X';
+    } else {
+      nut = '‖';
+    }
 
-    for (let fret = 0; fret <= maxFret; fret++) {
+    for (let fret = 1; fret <= maxFret; fret++) {
       if (rowFromTop === targetRowFromTop && fret === targetFret) {
         cells.push('X');
       } else if (stringIndex === 2 && D_INLAY_FRETS.has(fret)) {
@@ -48,7 +55,7 @@ export function renderFretboard(
       }
     }
 
-    rows.push('‖ ' + cells.join(' | '));
+    rows.push(nut + cells.join('|'));
   }
 
   return rows.join('\n');
