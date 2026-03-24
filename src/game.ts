@@ -68,7 +68,7 @@ export async function runGame(options: GameOptions): Promise<void> {
     // Prompt loop — re-ask on invalid input
     const firstPrompt = options.fretboard
       ? renderFretboard(options.maxFret, stringName, fret) + '\n> '
-      : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
+      : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + '\n> ';
     const retryPrompt = options.fretboard
       ? '> '
       : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
