@@ -3,11 +3,13 @@ import chalk from 'chalk';
 import { noteAtFret, parseNoteInput } from './notes';
 import { Stats } from './stats';
 import { renderFretboard } from './fretboard';
+import { WeightMatrix } from './weights';
 
 export interface GameOptions {
   maxFret: number;
   strings: string[];
   fretboard: boolean;
+  smart: boolean;
 }
 
 function randomInt(min: number, max: number): number {
@@ -54,6 +56,7 @@ export async function runGame(options: GameOptions): Promise<void> {
   });
 
   const stats = new Stats();
+  const weightMatrix = options.smart ? new WeightMatrix(options.strings, options.maxFret) : null;
 
   // Re-enable terminal echo and prompt behavior
   const question = (prompt: string): Promise<string> =>
@@ -79,8 +82,14 @@ export async function runGame(options: GameOptions): Promise<void> {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const stringName = options.strings[randomInt(0, options.strings.length - 1)];
-    const fret = randomInt(0, options.maxFret);
+    let stringName: string;
+    let fret: number;
+    if (weightMatrix) {
+      ({ stringName, fret } = weightMatrix.pick());
+    } else {
+      stringName = options.strings[randomInt(0, options.strings.length - 1)];
+      fret = randomInt(0, options.maxFret);
+    }
     const correctNote = noteAtFret(stringName, fret);
     const correctSemitone = parseNoteInput(correctNote)!;
 
@@ -111,6 +120,9 @@ export async function runGame(options: GameOptions): Promise<void> {
       answered = true;
       const isCorrect = parsed === correctSemitone;
       stats.record(isCorrect, elapsedSeconds, stringName, fret);
+      if (weightMatrix) {
+        weightMatrix.update(stringName, fret, isCorrect);
+      }
 
       if (isCorrect) {
         console.log(chalk.green(`  ✓ Correct! (${elapsedSeconds.toFixed(1)}s)`));
