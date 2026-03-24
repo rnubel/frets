@@ -91,7 +91,7 @@ export async function runGame(options: GameOptions): Promise<void> {
 
       answered = true;
       const isCorrect = parsed === correctSemitone;
-      stats.record(isCorrect, elapsedSeconds);
+      stats.record(isCorrect, elapsedSeconds, stringName, fret);
 
       if (isCorrect) {
         console.log(chalk.green(`  ✓ Correct! (${elapsedSeconds.toFixed(1)}s)`));
