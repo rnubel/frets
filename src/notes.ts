@@ -9,8 +9,19 @@ export type StringName = typeof STRINGS[number];
 
 const OPEN_NOTES: number[] = [4, 9, 2, 7, 11, 4]; // E A D G B E (semitone indices)
 
-/** Returns the canonical note name (using sharps) for a given string and fret. */
+// Map note letters to semitone base values
+const NOTE_MAP: Record<string, number> = {
+  c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11
+};
+
+/** Returns the canonical note name (using sharps) for a given string and fret.
+ * @param stringName - One of 'E', 'A', 'D', 'G', 'B'
+ * @param fret - Non-negative integer fret number
+ */
 export function noteAtFret(stringName: string, fret: number): string {
+  if (!Number.isInteger(fret) || fret < 0) {
+    throw new Error(`Fret must be a non-negative integer, got: ${fret}`);
+  }
   // Find the first matching string index (handles both E strings the same way)
   const stringIndex = STRINGS.indexOf(stringName as StringName);
   if (stringIndex === -1) {
@@ -26,19 +37,12 @@ export function parseNoteInput(input: string): number | null {
 
   const trimmed = input.trim().toLowerCase();
 
-  // Map note letters to semitone base values
-  const NOTE_MAP: Record<string, number> = {
-    c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11
-  };
-
   // Try formats: "g#", "gb", "g sharp", "g flat", "g"
   const match = trimmed.match(/^([a-g])\s*(#|b|sharp|flat)?$/);
   if (!match) return null;
 
   const letter = match[1];
   const modifier = match[2] ?? '';
-
-  if (!(letter in NOTE_MAP)) return null;
 
   let semitone = NOTE_MAP[letter];
 
