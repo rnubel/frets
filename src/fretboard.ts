@@ -4,29 +4,27 @@ const D_INLAY_FRETS = new Set([3, 7, 12, 15, 19]);
 const G_INLAY_FRETS = new Set([5, 9, 12, 17, 21]);
 
 /**
- * Renders an ASCII fretboard.
+ * Renders an ASCII fretboard. Always renders all 6 standard EADGBE strings.
  *
- * @param _strings - The full 6-string array (used only for row count; always renders EADGBE order)
  * @param maxFret - Highest fret to display (columns: 0..maxFret)
- * @param targetString - String name where X is placed (matched against EADGBE by last occurrence for high E)
+ * @param targetString - String name where X is placed. 'E' targets the low E string
+ *   (bottom row), consistent with how the game selects strings.
  * @param targetFret - Fret number where X is placed
  * @returns Multi-line string, no trailing newline
  */
 export function renderFretboard(
-  _strings: string[],
   maxFret: number,
   targetString: string,
   targetFret: number
 ): string {
   // Fixed EADGBE order; rows top-to-bottom = high E (5) down to low E (0)
   const STRING_ORDER = ['E', 'A', 'D', 'G', 'B', 'E']; // index 0 = low E
-  // Map targetString to its row index from top.
-  // High E is the last 'E' (index 5 in STRING_ORDER); low E is index 0.
-  // We match from the top row downward: top row = STRING_ORDER[5], ..., bottom = STRING_ORDER[0]
-  // Find the last occurrence of targetString to prefer high E when string is 'E'.
-  // Actually: the top row corresponds to STRING_ORDER[5], so we want the highest index match.
+
+  // Find the row from top for the target string.
+  // STRING_ORDER[0] = low E (bottom row), STRING_ORDER[5] = high E (top row).
+  // We scan from index 0 upward, so 'E' resolves to low E (index 0), not high E.
   let targetRowFromTop = -1;
-  for (let i = STRING_ORDER.length - 1; i >= 0; i--) {
+  for (let i = 0; i < STRING_ORDER.length; i++) {
     if (STRING_ORDER[i] === targetString) {
       targetRowFromTop = STRING_ORDER.length - 1 - i;
       break;
