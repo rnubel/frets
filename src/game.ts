@@ -2,10 +2,12 @@ import * as readline from 'readline';
 import chalk from 'chalk';
 import { noteAtFret, parseNoteInput } from './notes';
 import { Stats } from './stats';
+import { renderFretboard } from './fretboard';
 
 export interface GameOptions {
   maxFret: number;
   strings: string[];
+  fretboard: boolean;
 }
 
 function randomInt(min: number, max: number): number {
@@ -67,9 +69,10 @@ export async function runGame(options: GameOptions): Promise<void> {
     let answered = false;
     let startTime = process.hrtime.bigint();
     while (!answered) {
-      const raw = await question(
-        chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > '
-      );
+      const prompt = options.fretboard
+        ? renderFretboard(options.maxFret, stringName, fret) + '\n> '
+        : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
+      const raw = await question(prompt);
       const elapsedSeconds = Number(process.hrtime.bigint() - startTime) / 1e9;
 
       const parsed = parseNoteInput(raw.trim());

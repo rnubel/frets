@@ -10,6 +10,7 @@ program
   .description('Fretboard trainer — learn your guitar notes')
   .option('--max-fret <n>', 'Maximum fret number (0–24)', '15')
   .option('--strings <list>', 'Comma-separated strings to drill (e.g. E,A,D)', 'E,A,D,G,B,E')
+  .option('--fretboard', 'Show ASCII fretboard diagram instead of text prompt', false)
   .action((options) => {
     const maxFret = parseInt(options.maxFret, 10);
     if (!/^\d+$/.test(options.maxFret) || isNaN(maxFret) || maxFret < 0 || maxFret > 24) {
@@ -30,7 +31,7 @@ program
       }
     }
 
-    runGame({ maxFret, strings }).catch((err) => {
+    runGame({ maxFret, strings, fretboard: !!options.fretboard }).catch((err) => {
       console.error(err);
       process.exit(1);
     });
