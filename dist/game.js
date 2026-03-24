@@ -42,8 +42,33 @@ const chalk_1 = __importDefault(require("chalk"));
 const notes_1 = require("./notes");
 const stats_1 = require("./stats");
 const fretboard_1 = require("./fretboard");
+const weights_1 = require("./weights");
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function printSummary(stats) {
+    console.log('\n\n' + chalk_1.default.bold('Final Results'));
+    console.log(`  Correct:   ${chalk_1.default.green(stats.correct)}`);
+    console.log(`  Incorrect: ${chalk_1.default.red(stats.incorrect)}`);
+    console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
+    console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+    const pos = stats.positionStats();
+    // Only show positions attempted more than once
+    const entries = [...pos.entries()]
+        .filter(([, v]) => v.correct + v.incorrect > 1)
+        .map(([key, v]) => {
+        const total = v.correct + v.incorrect;
+        const acc = (v.correct / total) * 100;
+        return { key, correct: v.correct, total, acc };
+    })
+        .sort((a, b) => a.acc - b.acc)
+        .slice(0, 5);
+    if (entries.length > 0) {
+        console.log(chalk_1.default.bold('\n  Weakest positions:'));
+        for (const e of entries) {
+            console.log(`    ${e.key.padEnd(5)} ${e.correct}/${e.total}  (${e.acc.toFixed(0)}%)`);
+        }
+    }
 }
 function formatStats(stats) {
     const acc = stats.accuracy().toFixed(0);
@@ -56,6 +81,7 @@ async function runGame(options) {
         output: process.stdout,
     });
     const stats = new stats_1.Stats();
+    const weightMatrix = options.smart ? new weights_1.WeightMatrix(options.strings, options.maxFret) : null;
     // Re-enable terminal echo and prompt behavior
     const question = (prompt) => new Promise((resolve) => {
         process.stdout.write(prompt);
@@ -65,32 +91,31 @@ async function runGame(options) {
     console.log(chalk_1.default.dim('Type the note name (e.g. G#, Bb, F). Ctrl+C to quit.\n'));
     // Handle Ctrl+C cleanly
     process.once('SIGINT', () => {
-        console.log('\n\n' + chalk_1.default.bold('Final Results'));
-        console.log(`  Correct:   ${chalk_1.default.green(stats.correct)}`);
-        console.log(`  Incorrect: ${chalk_1.default.red(stats.incorrect)}`);
-        console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
-        console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+        printSummary(stats);
         process.exit(0);
     });
     rl.once('close', () => {
         // stdin was closed (EOF or pipe end) — print summary and exit
-        console.log('\n\n' + chalk_1.default.bold('Final Results'));
-        console.log(`  Correct:   ${chalk_1.default.green(stats.correct)}`);
-        console.log(`  Incorrect: ${chalk_1.default.red(stats.incorrect)}`);
-        console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
-        console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+        printSummary(stats);
         process.exit(0);
     });
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        const stringName = options.strings[randomInt(0, options.strings.length - 1)];
-        const fret = randomInt(0, options.maxFret);
+        let stringName;
+        let fret;
+        if (weightMatrix) {
+            ({ stringName, fret } = weightMatrix.pick());
+        }
+        else {
+            stringName = options.strings[randomInt(0, options.strings.length - 1)];
+            fret = randomInt(0, options.maxFret);
+        }
         const correctNote = (0, notes_1.noteAtFret)(stringName, fret);
         const correctSemitone = (0, notes_1.parseNoteInput)(correctNote);
         // Prompt loop — re-ask on invalid input
         const firstPrompt = options.fretboard
             ? (0, fretboard_1.renderFretboard)(options.maxFret, stringName, fret) + '\n> '
-            : chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + ' > ';
+            : chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + '\n> ';
         const retryPrompt = options.fretboard
             ? '> '
             : chalk_1.default.cyan(`String: ${stringName}`) + '  ' + chalk_1.default.yellow(`Fret: ${fret}`) + ' > ';
@@ -109,7 +134,10 @@ async function runGame(options) {
             }
             answered = true;
             const isCorrect = parsed === correctSemitone;
-            stats.record(isCorrect, elapsedSeconds);
+            stats.record(isCorrect, elapsedSeconds, stringName, fret);
+            if (weightMatrix) {
+                weightMatrix.update(stringName, fret, isCorrect);
+            }
             if (isCorrect) {
                 console.log(chalk_1.default.green(`  ✓ Correct! (${elapsedSeconds.toFixed(1)}s)`));
             }
