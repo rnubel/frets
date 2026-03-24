@@ -2,7 +2,7 @@ export class Stats {
   correct = 0;
   incorrect = 0;
   private responseTimes: number[] = [];
-  private positionMap: Map<string, { correct: number; incorrect: number }> = new Map();
+  private readonly positionMap: Map<string, { correct: number; incorrect: number }> = new Map();
 
   record(isCorrect: boolean, responseTimeSeconds: number, stringName: string, fret: number): void {
     if (isCorrect) {
@@ -36,6 +36,6 @@ export class Stats {
   }
 
   positionStats(): Map<string, { correct: number; incorrect: number }> {
-    return this.positionMap;
+    return new Map([...this.positionMap.entries()].map(([k, v]) => [k, { ...v }]));
   }
 }
