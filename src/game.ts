@@ -14,6 +14,33 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function printSummary(stats: Stats): void {
+  console.log('\n\n' + chalk.bold('Final Results'));
+  console.log(`  Correct:   ${chalk.green(stats.correct)}`);
+  console.log(`  Incorrect: ${chalk.red(stats.incorrect)}`);
+  console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
+  console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+
+  const pos = stats.positionStats();
+  // Only show positions attempted more than once
+  const entries = [...pos.entries()]
+    .filter(([, v]) => v.correct + v.incorrect > 1)
+    .map(([key, v]) => {
+      const total = v.correct + v.incorrect;
+      const acc = (v.correct / total) * 100;
+      return { key, correct: v.correct, total, acc };
+    })
+    .sort((a, b) => a.acc - b.acc)
+    .slice(0, 5);
+
+  if (entries.length > 0) {
+    console.log(chalk.bold('\n  Weakest positions:'));
+    for (const e of entries) {
+      console.log(`    ${e.key.padEnd(5)} ${e.correct}/${e.total}  (${e.acc.toFixed(0)}%)`);
+    }
+  }
+}
+
 function formatStats(stats: Stats): string {
   const acc = stats.accuracy().toFixed(0);
   const avg = stats.avgResponseTime().toFixed(1);
@@ -40,21 +67,13 @@ export async function runGame(options: GameOptions): Promise<void> {
 
   // Handle Ctrl+C cleanly
   process.once('SIGINT', () => {
-    console.log('\n\n' + chalk.bold('Final Results'));
-    console.log(`  Correct:   ${chalk.green(stats.correct)}`);
-    console.log(`  Incorrect: ${chalk.red(stats.incorrect)}`);
-    console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
-    console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+    printSummary(stats);
     process.exit(0);
   });
 
   rl.once('close', () => {
     // stdin was closed (EOF or pipe end) — print summary and exit
-    console.log('\n\n' + chalk.bold('Final Results'));
-    console.log(`  Correct:   ${chalk.green(stats.correct)}`);
-    console.log(`  Incorrect: ${chalk.red(stats.incorrect)}`);
-    console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
-    console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+    printSummary(stats);
     process.exit(0);
   });
 
