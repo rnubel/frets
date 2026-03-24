@@ -15,7 +15,7 @@ const NOTE_MAP: Record<string, number> = {
 };
 
 /** Returns the canonical note name (using sharps) for a given string and fret.
- * @param stringName - One of 'E', 'A', 'D', 'G', 'B'
+ * @param stringName - One of 'E', 'A', 'D', 'G', 'B' (standard EADGBE tuning; both E strings are treated identically)
  * @param fret - Non-negative integer fret number
  */
 export function noteAtFret(stringName: string, fret: number): string {

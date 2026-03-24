@@ -65,8 +65,8 @@ export async function runGame(options: GameOptions): Promise<void> {
 
     // Prompt loop — re-ask on invalid input
     let answered = false;
+    let startTime = process.hrtime.bigint();
     while (!answered) {
-      const startTime = process.hrtime.bigint();
       const raw = await question(
         chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > '
       );
@@ -76,6 +76,7 @@ export async function runGame(options: GameOptions): Promise<void> {
 
       if (parsed === null) {
         console.log(chalk.dim('  Invalid input — try again (e.g. G#, Bb, F)'));
+        startTime = process.hrtime.bigint(); // reset timer for the retry
         continue;
       }
 

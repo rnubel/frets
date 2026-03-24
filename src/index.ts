@@ -18,6 +18,10 @@ program
     }
 
     const strings = options.strings.split(',').map((s: string) => s.trim().toUpperCase());
+    if (strings.some((s: string) => s === '')) {
+      console.error('Error: --strings must not contain empty values (check for leading/trailing commas)');
+      process.exit(1);
+    }
     const validStrings = new Set<string>(STRINGS);
     for (const s of strings) {
       if (!validStrings.has(s)) {
