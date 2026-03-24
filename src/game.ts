@@ -66,13 +66,19 @@ export async function runGame(options: GameOptions): Promise<void> {
     const correctSemitone = parseNoteInput(correctNote)!;
 
     // Prompt loop — re-ask on invalid input
+    const firstPrompt = options.fretboard
+      ? renderFretboard(options.maxFret, stringName, fret) + '\n> '
+      : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
+    const retryPrompt = options.fretboard
+      ? '> '
+      : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
+
     let answered = false;
+    let isFirst = true;
     let startTime = process.hrtime.bigint();
     while (!answered) {
-      const prompt = options.fretboard
-        ? renderFretboard(options.maxFret, stringName, fret) + '\n> '
-        : chalk.cyan(`String: ${stringName}`) + '  ' + chalk.yellow(`Fret: ${fret}`) + ' > ';
-      const raw = await question(prompt);
+      const raw = await question(isFirst ? firstPrompt : retryPrompt);
+      isFirst = false;
       const elapsedSeconds = Number(process.hrtime.bigint() - startTime) / 1e9;
 
       const parsed = parseNoteInput(raw.trim());

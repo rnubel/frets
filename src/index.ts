@@ -31,7 +31,7 @@ program
       }
     }
 
-    runGame({ maxFret, strings, fretboard: !!options.fretboard }).catch((err) => {
+    runGame({ maxFret, strings, fretboard: options.fretboard as boolean }).catch((err) => {
       console.error(err);
       process.exit(1);
     });
