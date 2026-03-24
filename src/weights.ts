@@ -13,6 +13,9 @@ export class WeightMatrix {
   }
 
   pick(): { stringName: string; fret: number } {
+    if (this.positions.length === 0) {
+      throw new Error('WeightMatrix has no positions');
+    }
     const totalWeight = this.positions.reduce(
       (sum, p) => sum + this.weights.get(`${p.stringName}:${p.fret}`)!,
       0
@@ -27,6 +30,9 @@ export class WeightMatrix {
 
   update(stringName: string, fret: number, isCorrect: boolean): void {
     const key = `${stringName}:${fret}`;
+    if (!this.weights.has(key)) {
+      throw new Error(`Unknown position: ${key}`);
+    }
     const current = this.weights.get(key) ?? 1.0;
     const next = isCorrect
       ? Math.max(0.5, current * 0.8)

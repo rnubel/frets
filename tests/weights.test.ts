@@ -39,4 +39,14 @@ describe('WeightMatrix', () => {
       expect(fret).toBeLessThanOrEqual(3);
     }
   });
+
+  it('throws when pick() is called on empty WeightMatrix', () => {
+    const wm = new WeightMatrix([], 0);
+    expect(() => wm.pick()).toThrow('WeightMatrix has no positions');
+  });
+
+  it('throws when update() is called with unknown position', () => {
+    const wm = new WeightMatrix(['E'], 5);
+    expect(() => wm.update('X', 0, true)).toThrow('Unknown position: X:0');
+  });
 });
