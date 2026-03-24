@@ -12,15 +12,15 @@ program
   .option('--strings <list>', 'Comma-separated strings to drill (e.g. E,A,D)', 'E,A,D,G,B,E')
   .action((options) => {
     const maxFret = parseInt(options.maxFret, 10);
-    if (isNaN(maxFret) || maxFret < 0 || maxFret > 24) {
+    if (!/^\d+$/.test(options.maxFret) || isNaN(maxFret) || maxFret < 0 || maxFret > 24) {
       console.error('Error: --max-fret must be a number between 0 and 24');
       process.exit(1);
     }
 
     const strings = options.strings.split(',').map((s: string) => s.trim().toUpperCase());
-    const validStrings = new Set(STRINGS);
+    const validStrings = new Set<string>(STRINGS);
     for (const s of strings) {
-      if (!validStrings.has(s as typeof STRINGS[number])) {
+      if (!validStrings.has(s)) {
         console.error(`Error: unknown string "${s}". Valid strings are: ${STRINGS.join(', ')}`);
         process.exit(1);
       }
