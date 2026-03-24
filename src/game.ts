@@ -1,6 +1,6 @@
 import * as readline from 'readline';
 import chalk from 'chalk';
-import { noteAtFret, parseNoteInput, STRINGS } from './notes';
+import { noteAtFret, parseNoteInput } from './notes';
 import { Stats } from './stats';
 
 export interface GameOptions {
@@ -22,7 +22,6 @@ export async function runGame(options: GameOptions): Promise<void> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    terminal: false,
   });
 
   const stats = new Stats();
@@ -38,7 +37,17 @@ export async function runGame(options: GameOptions): Promise<void> {
   console.log(chalk.dim('Type the note name (e.g. G#, Bb, F). Ctrl+C to quit.\n'));
 
   // Handle Ctrl+C cleanly
-  process.on('SIGINT', () => {
+  process.once('SIGINT', () => {
+    console.log('\n\n' + chalk.bold('Final Results'));
+    console.log(`  Correct:   ${chalk.green(stats.correct)}`);
+    console.log(`  Incorrect: ${chalk.red(stats.incorrect)}`);
+    console.log(`  Accuracy:  ${stats.accuracy().toFixed(1)}%`);
+    console.log(`  Avg time:  ${stats.avgResponseTime().toFixed(2)}s`);
+    process.exit(0);
+  });
+
+  rl.once('close', () => {
+    // stdin was closed (EOF or pipe end) — print summary and exit
     console.log('\n\n' + chalk.bold('Final Results'));
     console.log(`  Correct:   ${chalk.green(stats.correct)}`);
     console.log(`  Incorrect: ${chalk.red(stats.incorrect)}`);
