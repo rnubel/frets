@@ -37,31 +37,31 @@ describe('renderFretboard', () => {
     expect(cells[10].trim()).toBe('-X-');
   });
 
-  it('places ⏺ on D string at fret 3', () => {
+  it('places ▼ on D string at fret 3', () => {
     // D string = index 2 from bottom → row index 3 from top
     const lines = renderFretboard(15, 'E', 0)
       .split('\n').filter((l: string) => l.length > 0);
     const dRow = lines[3];
     const cells = dRow.slice(2).split('|');
-    expect(cells[2].trim()).toBe('⏺');
+    expect(cells[2].trim()).toBe('▼');
   });
 
-  it('places ⏺ on G string at fret 5', () => {
+  it('places ▲ on G string at fret 5', () => {
     // G string = index 3 from bottom → row index 2 from top
     const lines = renderFretboard(15, 'E', 0)
       .split('\n').filter((l: string) => l.length > 0);
     const gRow = lines[2];
     const cells = gRow.slice(2).split('|');
-    expect(cells[4].trim()).toBe('⏺');
+    expect(cells[4].trim()).toBe('▲');
   });
 
-  it('places ⏺ on both D and G string at fret 12 (double dot)', () => {
+  it('places ▼/▲ on both D and G string at fret 12 (double dot)', () => {
     const lines = renderFretboard(15, 'E', 0)
       .split('\n').filter((l: string) => l.length > 0);
     const dRow = lines[3];
     const gRow = lines[2];
-    expect(dRow.slice(2).split('|')[11].trim()).toBe('⏺');
-    expect(gRow.slice(2).split('|')[11].trim()).toBe('⏺');
+    expect(dRow.slice(2).split('|')[11].trim()).toBe('▼');
+    expect(gRow.slice(2).split('|')[11].trim()).toBe('▲');
   });
 
   it('X takes priority over ⏺ when target is on D string at fret 3', () => {
@@ -82,7 +82,7 @@ describe('renderFretboard', () => {
     // cells has length maxFret+1 = 9 (frets 0-8)
     expect(cells).toHaveLength(8);
     // verify no stray ⏺ beyond what's expected in range
-    const inlayPositions = cells.map((c: string, i: number) => c.trim() === '⏺' ? i : -1).filter((i: number) => i >= 0);
-    expect(inlayPositions).toEqual([4]);
+    const inlayPositions = cells.map((c: string, i: number) => c.trim() === '▲' ? i : -1).filter((i: number) => i >= 0);
+    expect(inlayPositions).toEqual([2, 4, 6]);
   });
 });
