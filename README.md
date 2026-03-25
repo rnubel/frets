@@ -3,6 +3,8 @@
 A terminal-based guitar fretboard trainer. Drills you on note positions across the neck with adaptive weighting (the notes you miss appear more often; the notes you get right appear less often).
 
 ```
+npx @rnubel/frets
+
 🎸 Frets — Fretboard Trainer
 Type the note name (e.g. G#, Bb, F). Ctrl+C to quit.
 
@@ -24,6 +26,14 @@ See [#usage](#usage) for more options and customizations.
 - Node.js 20+
 
 ## Installation
+
+You can run this directly with `npx`:
+
+```bash
+npx @rnubel/frets
+```
+
+Or, build from source and run:
 
 ```bash
 git clone https://github.com/rnubel/frets.git
@@ -47,6 +57,7 @@ npm start
 ## Usage
 
 ```bash
+npx @rnubel/frets [options]
 node dist/index.js [options]
 ```
 
