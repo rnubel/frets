@@ -53,9 +53,9 @@ describe('Stats', () => {
     stats.record(true, 1.0, 'E', 6); // neighbor — should not affect E:5
 
     const pos = stats.positionStats();
-    expect(pos.get('E:5')).toEqual({ correct: 1, incorrect: 1 });
-    expect(pos.get('A:3')).toEqual({ correct: 1, incorrect: 0 });
-    expect(pos.get('E:6')).toEqual({ correct: 1, incorrect: 0 });
+    expect(pos.get('E:5')).toEqual({ correct: 1, incorrect: 1, responseTimes: [1.0, 2.0] });
+    expect(pos.get('A:3')).toEqual({ correct: 1, incorrect: 0, responseTimes: [1.5] });
+    expect(pos.get('E:6')).toEqual({ correct: 1, incorrect: 0, responseTimes: [1.0] });
   });
 
   it('positionStats returns empty map when nothing recorded', () => {

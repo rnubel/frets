@@ -2,7 +2,7 @@ export class Stats {
   correct = 0;
   incorrect = 0;
   private responseTimes: number[] = [];
-  private readonly positionMap: Map<string, { correct: number; incorrect: number }> = new Map();
+  private readonly positionMap: Map<string, { correct: number; incorrect: number, responseTimes: number[] }> = new Map();
 
   record(isCorrect: boolean, responseTimeSeconds: number, stringName: string, fret: number): void {
     if (isCorrect) {
@@ -13,10 +13,11 @@ export class Stats {
     this.responseTimes.push(responseTimeSeconds);
 
     const key = `${stringName}:${fret}`;
-    const existing = this.positionMap.get(key) ?? { correct: 0, incorrect: 0 };
+    const existing = this.positionMap.get(key) ?? { correct: 0, incorrect: 0, responseTimes: [] };
     this.positionMap.set(key, {
       correct: existing.correct + (isCorrect ? 1 : 0),
       incorrect: existing.incorrect + (isCorrect ? 0 : 1),
+      responseTimes: [...existing.responseTimes, responseTimeSeconds],
     });
   }
 
@@ -35,7 +36,7 @@ export class Stats {
     return sum / this.responseTimes.length;
   }
 
-  positionStats(): Map<string, { correct: number; incorrect: number }> {
+  positionStats(): Map<string, { correct: number; incorrect: number, responseTimes: number[] }> {
     return new Map([...this.positionMap.entries()].map(([k, v]) => [k, { ...v }]));
   }
 }

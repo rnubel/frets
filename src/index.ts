@@ -10,8 +10,9 @@ program
   .description('Fretboard trainer — learn your guitar notes')
   .option('--max-fret <n>', 'Maximum fret number (0–24)', '15')
   .option('--strings <list>', 'Comma-separated strings to drill (e.g. E,A,D)', 'E,A,D,G,B,E')
-  .option('--fretboard', 'Show ASCII fretboard diagram instead of text prompt', false)
-  .option('--smart', 'Weight note selection toward weaker positions', false)
+  .option('--fretboard', 'Show ASCII fretboard diagram instead of text prompt', true)
+  .option('--smart', 'Weight note selection toward weaker positions', true)
+  .option('--debug', 'Show debug info (e.g. weight matrix)', false)
   .action((options) => {
     const maxFret = parseInt(options.maxFret, 10);
     if (!/^\d+$/.test(options.maxFret) || isNaN(maxFret) || maxFret < 0 || maxFret > 24) {
@@ -32,7 +33,7 @@ program
       }
     }
 
-    runGame({ maxFret, strings, fretboard: options.fretboard as boolean, smart: options.smart as boolean }).catch((err) => {
+    runGame({ maxFret, strings, fretboard: options.fretboard as boolean, smart: options.smart as boolean, debug: options.debug as boolean }).catch((err) => {
       console.error(err);
       process.exit(1);
     });

@@ -15,18 +15,18 @@ describe('WeightMatrix', () => {
 
   it('increases weight on incorrect answer, clamped at 4.0', () => {
     const wm = new WeightMatrix(['E'], 0);
-    wm.update('E', 0, false);
-    wm.update('E', 0, false);
-    wm.update('E', 0, false);
-    wm.update('E', 0, false);
-    wm.update('E', 0, false);
+    wm.update('E', 0, false, 1.0);
+    wm.update('E', 0, false, 1.0);
+    wm.update('E', 0, false, 1.0);
+    wm.update('E', 0, false, 1.0);
+    wm.update('E', 0, false, 1.0);
     // weight starts at 1.0, ×1.5 each wrong, clamped at 4.0
     expect(wm.getWeight('E', 0)).toBe(4.0);
   });
 
   it('decreases weight on correct answer, clamped at 0.5', () => {
     const wm = new WeightMatrix(['E'], 0);
-    for (let i = 0; i < 10; i++) wm.update('E', 0, true);
+    for (let i = 0; i < 10; i++) wm.update('E', 0, true, 1.0);
     expect(wm.getWeight('E', 0)).toBe(0.5);
   });
 
@@ -47,6 +47,6 @@ describe('WeightMatrix', () => {
 
   it('throws when update() is called with unknown position', () => {
     const wm = new WeightMatrix(['E'], 5);
-    expect(() => wm.update('X', 0, true)).toThrow('Unknown position: X:0');
+    expect(() => wm.update('X', 0, true, 1.0)).toThrow('Unknown position: X:0');
   });
 });

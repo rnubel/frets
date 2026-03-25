@@ -3,6 +3,8 @@ const D_INLAY_FRETS = new Set([3, 7, 12, 15, 19]);
 // G string (STRINGS index 3) inlay frets
 const G_INLAY_FRETS = new Set([5, 9, 12, 17, 21]);
 
+const MARKER = '-X-';
+
 /**
  * Renders an ASCII fretboard. Always renders all 6 standard EADGBE strings.
  *
@@ -36,8 +38,6 @@ export function renderFretboard(
     const stringIndex = STRING_ORDER.length - 1 - rowFromTop; // 5 down to 0
     const cells: string[] = [];
     var nut;
-
-    const MARKER = '-X-';
     
     if (rowFromTop == targetRowFromTop && targetFret == 0) {
       nut = MARKER;

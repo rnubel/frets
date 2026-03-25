@@ -10,6 +10,7 @@ export interface GameOptions {
   strings: string[];
   fretboard: boolean;
   smart: boolean;
+  debug: boolean;
 }
 
 function randomInt(min: number, max: number): number {
@@ -121,7 +122,14 @@ export async function runGame(options: GameOptions): Promise<void> {
       const isCorrect = parsed === correctSemitone;
       stats.record(isCorrect, elapsedSeconds, stringName, fret);
       if (weightMatrix) {
-        weightMatrix.update(stringName, fret, isCorrect);
+        const avgResponseTime = stats.avgResponseTime();
+        const thisResponseTime = elapsedSeconds;
+        const timeProportion = thisResponseTime / (avgResponseTime || 1); // avoid division by zero
+        if (options.debug) {
+          console.log(chalk.dim(`  Debug: timeProportion=${timeProportion.toFixed(2)} (this: ${thisResponseTime.toFixed(2)}s, avg: ${avgResponseTime.toFixed(2)}s)`));
+          console.log(chalk.dim(`  Debug: updating weight for ${stringName}:${fret} (isCorrect=${isCorrect})`));
+        }
+        weightMatrix.update(stringName, fret, isCorrect, timeProportion);
       }
 
       if (isCorrect) {
@@ -131,6 +139,10 @@ export async function runGame(options: GameOptions): Promise<void> {
       }
 
       console.log('  ' + formatStats(stats) + '\n');
+
+      if (options.debug && weightMatrix) {
+        console.log(chalk.dim(weightMatrix.debug()) + '\n');
+      }
     }
   }
 }
