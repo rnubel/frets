@@ -1,7 +1,10 @@
 // D string (STRINGS index 2) inlay frets
-const D_INLAY_FRETS = new Set([3, 7, 12, 15, 19]);
+const D_INLAY_FRETS = new Set([3, 5, 7, 9, 12, 15, 17, 21, 24]);
 // G string (STRINGS index 3) inlay frets
-const G_INLAY_FRETS = new Set([5, 9, 12, 17, 21]);
+const G_INLAY_FRETS = new Set([3, 5, 7, 9, 12, 15, 17, 21, 24]);
+
+const B_INLAY_FRETS = new Set([12, 24]);
+const A_INLAY_FRETS = new Set([12, 24]);
 
 const MARKER = '-X-';
 
@@ -49,9 +52,13 @@ export function renderFretboard(
       if (rowFromTop === targetRowFromTop && fret === targetFret) {
         cells.push(MARKER);
       } else if (stringIndex === 2 && D_INLAY_FRETS.has(fret)) {
-        cells.push(' ⏺ ');
+        cells.push(' ▼ ');
       } else if (stringIndex === 3 && G_INLAY_FRETS.has(fret)) {
-        cells.push(' ⏺ ');
+        cells.push(' ▲ ');
+      } else if (stringIndex === 4 && B_INLAY_FRETS.has(fret)) {
+        cells.push(' ▲ ');
+      } else if (stringIndex === 1 && A_INLAY_FRETS.has(fret)) {
+        cells.push(' ▼ ');
       } else {
         cells.push('   ');
       }
