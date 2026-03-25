@@ -36,23 +36,29 @@ export function renderFretboard(
     const stringIndex = STRING_ORDER.length - 1 - rowFromTop; // 5 down to 0
     const cells: string[] = [];
     var nut;
+
+    const MARKER = '-X-';
     
     if (rowFromTop == targetRowFromTop && targetFret == 0) {
-      nut = 'X';
+      nut = MARKER;
     } else {
-      nut = '‖';
+      nut = ' ‖';
     }
 
     for (let fret = 1; fret <= maxFret; fret++) {
       if (rowFromTop === targetRowFromTop && fret === targetFret) {
-        cells.push('X');
+        cells.push(MARKER);
       } else if (stringIndex === 2 && D_INLAY_FRETS.has(fret)) {
-        cells.push('⏺');
+        cells.push(' ⏺ ');
       } else if (stringIndex === 3 && G_INLAY_FRETS.has(fret)) {
-        cells.push('⏺');
+        cells.push(' ⏺ ');
       } else {
-        cells.push(' ');
+        cells.push('   ');
       }
+    }
+
+    if (nut === MARKER) {
+      cells[0] = '  ';
     }
 
     rows.push(nut + cells.join('|'));
