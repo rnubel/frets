@@ -2,12 +2,20 @@ export class WeightMatrix {
   private weights: Map<string, number> = new Map();
   private positions: Array<{ stringName: string; fret: number }> = [];
 
-  constructor(strings: string[], maxFret: number) {
+  constructor(strings: string[], maxFret: number, initialWeights?: Record<string, number>) {
     for (const stringName of strings) {
       for (let fret = 0; fret <= maxFret; fret++) {
         const key = `${stringName}:${fret}`;
         this.weights.set(key, 1.0);
         this.positions.push({ stringName, fret });
+      }
+    }
+    // Apply initial weights, clamped to valid range, ignoring unknown keys
+    if (initialWeights) {
+      for (const [key, value] of Object.entries(initialWeights)) {
+        if (this.weights.has(key)) {
+          this.weights.set(key, Math.min(4.0, Math.max(0.5, value)));
+        }
       }
     }
   }
@@ -43,6 +51,14 @@ export class WeightMatrix {
 
   getWeight(stringName: string, fret: number): number {
     return this.weights.get(`${stringName}:${fret}`) ?? 1.0;
+  }
+
+  toJSON(): Record<string, number> {
+    const result: Record<string, number> = {};
+    for (const [key, value] of this.weights.entries()) {
+      result[key] = value;
+    }
+    return result;
   }
 
   debug(): string {

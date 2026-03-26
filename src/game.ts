@@ -4,6 +4,7 @@ import { noteAtFret, parseNoteInput } from './notes';
 import { Stats } from './stats';
 import { renderFretboard } from './fretboard';
 import { WeightMatrix } from './weights';
+import { loadWeights, saveWeights } from './persistence';
 
 export interface GameOptions {
   maxFret: number;
@@ -11,6 +12,7 @@ export interface GameOptions {
   fretboard: boolean;
   smart: boolean;
   debug: boolean;
+  persistFile?: string;
 }
 
 function randomInt(min: number, max: number): number {
@@ -57,7 +59,12 @@ export async function runGame(options: GameOptions): Promise<void> {
   });
 
   const stats = new Stats();
-  const weightMatrix = options.smart ? new WeightMatrix(options.strings, options.maxFret) : null;
+  const initialWeights = options.persistFile ? loadWeights(options.persistFile) : undefined;
+  const weightMatrix = options.smart ? new WeightMatrix(options.strings, options.maxFret, initialWeights) : undefined;
+
+  if (options.persistFile && !options.smart) {
+    console.warn('Warning: --persist has no effect without --smart');
+  }
 
   // Re-enable terminal echo and prompt behavior
   const question = (prompt: string): Promise<string> =>
@@ -72,12 +79,20 @@ export async function runGame(options: GameOptions): Promise<void> {
   // Handle Ctrl+C cleanly
   process.once('SIGINT', () => {
     printSummary(stats);
+    if (options.persistFile && weightMatrix) {
+      saveWeights(options.persistFile, weightMatrix.toJSON());
+      console.log(`Weights saved to ${options.persistFile}`);
+    }
     process.exit(0);
   });
 
   rl.once('close', () => {
     // stdin was closed (EOF or pipe end) — print summary and exit
     printSummary(stats);
+    if (options.persistFile && weightMatrix) {
+      saveWeights(options.persistFile, weightMatrix.toJSON());
+      console.log(`Weights saved to ${options.persistFile}`);
+    }
     process.exit(0);
   });
 

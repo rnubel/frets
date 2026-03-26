@@ -13,6 +13,7 @@ program
   .option('--fretboard', 'Show ASCII fretboard diagram instead of text prompt', true)
   .option('--smart', 'Weight note selection toward weaker positions', true)
   .option('--debug', 'Show debug info (e.g. weight matrix)', false)
+  .option('--persist <file>', 'File path to load/save adaptive weights between sessions')
   .action((options) => {
     const maxFret = parseInt(options.maxFret, 10);
     if (!/^\d+$/.test(options.maxFret) || isNaN(maxFret) || maxFret < 0 || maxFret > 24) {
@@ -33,7 +34,14 @@ program
       }
     }
 
-    runGame({ maxFret, strings, fretboard: options.fretboard as boolean, smart: options.smart as boolean, debug: options.debug as boolean }).catch((err) => {
+    runGame({
+      maxFret,
+      strings,
+      fretboard: options.fretboard as boolean,
+      smart: options.smart as boolean,
+      debug: options.debug as boolean,
+      persistFile: options.persist as string | undefined,
+    }).catch((err) => {
       console.error(err);
       process.exit(1);
     });
