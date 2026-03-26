@@ -1,6 +1,6 @@
 {
   "name": "@rnubel/frets",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "bin": {
     "frets": "dist/index.js"
