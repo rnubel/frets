@@ -67,6 +67,7 @@ node dist/index.js [options]
 | `--strings <list>` | `E,A,D,G,B,E` | Comma-separated list of strings to drill |
 | `--fretboard` | `true` | Show ASCII fretboard diagram instead of a text prompt |
 | `--smart` | `true` | Adaptively weight positions toward your weak spots |
+| `--persist <file>` | _(none)_ | File path to load/save adaptive weights between sessions |
 | `--debug` | `false` | Print the full weight matrix after each answer |
 
 **Examples:**
@@ -80,6 +81,9 @@ node dist/index.js --no-fretboard
 
 # Disable adaptive weighting
 node dist/index.js --no-smart
+
+# Save and resume adaptive weights across sessions
+node dist/index.js --persist ~/.frets-weights.json
 ```
 
 Press `Ctrl+C` at any time to end the session and see your summary.

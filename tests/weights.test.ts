@@ -49,4 +49,26 @@ describe('WeightMatrix', () => {
     const wm = new WeightMatrix(['E'], 5);
     expect(() => wm.update('X', 0, true, 1.0)).toThrow('Unknown position: X:0');
   });
+
+  it('toJSON returns all current weights as a plain object', () => {
+    const wm = new WeightMatrix(['E', 'A'], 1);
+    wm.update('E', 0, false, 1.0); // increase E:0
+    const json = wm.toJSON();
+    expect(typeof json).toBe('object');
+    expect(json['E:0']).toBeGreaterThan(1.0);
+    expect(json['A:1']).toBeCloseTo(1.0);
+  });
+
+  it('constructor accepts initialWeights and applies them', () => {
+    const initial: Record<string, number> = { 'E:0': 2.5, 'A:1': 0.7 };
+    const wm = new WeightMatrix(['E', 'A'], 1, initial);
+    expect(wm.getWeight('E', 0)).toBeCloseTo(2.5);
+    expect(wm.getWeight('A', 1)).toBeCloseTo(0.7);
+  });
+
+  it('constructor ignores initialWeights keys not in current config', () => {
+    const initial: Record<string, number> = { 'D:5': 3.0 }; // D is not in strings
+    const wm = new WeightMatrix(['E'], 1, initial);
+    expect(wm.getWeight('E', 0)).toBeCloseTo(1.0); // defaults to 1.0
+  });
 });
