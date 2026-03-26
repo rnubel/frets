@@ -9,14 +9,14 @@ npx @rnubel/frets
 Type the note name (e.g. G#, Bb, F). Ctrl+C to quit.
 
  ‖   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+ ‖   |   |   |   |   |   |   |   |   |   |   | ▲ |   |   |   
+-X-  |   | ▲ |   | ▲ |   | ▲ |   | ▲ |   |   | ▲ |   |   | ▲ 
+ ‖   |   | ▼ |   | ▼ |   | ▼ |   | ▼ |   |   | ▼ |   |   | ▼ 
+ ‖   |   |   |   |   |   |   |   |   |   |   | ▼ |   |   |   
  ‖   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
- ‖   |   |   |   | ⏺ |   |   |   |-X-|   |   | ⏺ |   |   |   
- ‖   |   | ⏺ |   |   |   | ⏺ |   |   |   |   | ⏺ |   |   | ⏺ 
- ‖   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
- ‖   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
-> E
-  ✓ Correct! (4.9s)
-  Score: 1/1 (100%) | Avg: 4.9s
+> G
+  ✓ Correct! (8.3s)
+  Score: 1/1 (100%) | Avg: 8.3s
 ```
 
 See [#usage](#usage) for more options and customizations.
